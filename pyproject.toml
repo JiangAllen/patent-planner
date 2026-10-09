@@ -3,7 +3,10 @@ name = "patent-planner"
 version = "0.1.0"
 description = "專利答辯 Agent 的 Planner 微調（合成資料、Qwen3-4B QLoRA）"
 requires-python = ">=3.12"
-dependencies = ["matplotlib"]
+dependencies = [
+    "matplotlib",
+    "opencc-python-reimplemented>=0.1.7",
+]
 
 [dependency-groups]
 dev = ["pytest", "ruff"]

@@ -1,0 +1,39 @@
+{
+  "version": "v1",
+  "paraphrase_model": "qwen2.5:7b-instruct",
+  "paraphrase_ok_rate": 0.9529,
+  "counts": {
+    "train": {
+      "single": 426,
+      "parallel": 350,
+      "chain": 429,
+      "clarify": 237,
+      "refuse": 254,
+      "dag": 343
+    },
+    "val": {
+      "parallel": 24,
+      "chain": 37,
+      "single": 40,
+      "refuse": 25,
+      "dag": 38,
+      "clarify": 3
+    },
+    "test_id": {
+      "single": 22,
+      "parallel": 26,
+      "dag": 19,
+      "chain": 33,
+      "clarify": 4,
+      "refuse": 17
+    },
+    "test_ood": {
+      "parallel": 25,
+      "chain": 50,
+      "dag": 25,
+      "clarify": 24,
+      "refuse": 25
+    }
+  },
+  "dropped_by_finalize": 74
+}
