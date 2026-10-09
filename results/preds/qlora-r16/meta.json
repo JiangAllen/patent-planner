@@ -1,0 +1,12 @@
+{
+  "run_name": "qlora-r16",
+  "model": "../outputs/adapters/qlora-r16",
+  "shots": 0,
+  "splits": [
+    "val",
+    "test_id",
+    "test_ood"
+  ],
+  "batch_size": 8,
+  "limit": 0
+}
