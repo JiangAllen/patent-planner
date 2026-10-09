@@ -49,7 +49,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2026-1347","claim_no":14,"instruction":"加入散熱鰭片的結構限定"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2026-1884"},"depends_on":[]},{"id":"s3","tool":"draft_response","args":{"oa_id":"OA-2026-1884","arguments":"$s1.amended_claim"},"depends_on":["s1","s2"]}]}
 ```
 
-觀察：
+觀察：兩個來源都有，但先排 amend_claims，draft_response 只引用一個來源且漏 amendments；匯合（fan-in）結構沒學會。
 
 ## test_ood-00100（test_ood / clarify / S26）— wrong_missing
 
@@ -71,7 +71,7 @@ gold：
 {"action":"clarify","missing":["case_id"]}
 ```
 
-觀察：
+觀察：action 正確，但 missing 只列 1 項、漏了 reference_patent_no；訓練集 clarify 全是單一缺漏，模型學到「只缺一項」。
 
 ## test_ood-00029（test_ood / chain / S16）— ref_arg
 
@@ -121,7 +121,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_office_action","args":{"oa_id":"OA-2025-3719"},"depends_on":[]},{"id":"s2","tool":"calc_deadline","args":{"issue_date":"$s1.issue_date","extension_months":1},"depends_on":["s1"]},{"id":"s3","tool":"notify_client","args":{"case_id":"TW-2025-5627","message":"OA-2025-3719的答辯期限已延後1個月，新期限為：$s2.deadline"},"depends_on":["s2"]}]}
 ```
 
-觀察：
+觀察：步驟、相依、引用全對，只是把 $s2.deadline 包進一句通知文字；屬引用格式約定問題，不是規劃錯誤。
 
 ## test_ood-00080（test_ood / dag / S22）— missing_step, literal_arg, ref_arg, dependency
 
@@ -172,7 +172,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2025-9776","claim_no":4,"instruction":"限定封裝層厚度小於 50 微米"},"depends_on":[]},{"id":"s2","tool":"draft_response","args":{"oa_id":"OA-2025-6730","arguments":"核駁理由"},"depends_on":[]}]}
 ```
 
-觀察：
+觀察：漏掉 get_office_action，arguments 直接塞字面文字、沒有 amendments；兩個獨立來源匯合到 draft_response 的結構沒學會。
 
 ## test_ood-00112（test_ood / clarify / S26）— wrong_missing
 
@@ -194,7 +194,7 @@ gold：
 {"action":"clarify","missing":["case_id"]}
 ```
 
-觀察：
+觀察：action 正確，但 missing 只列 1 項、漏了 reference_patent_no；訓練集 clarify 全是單一缺漏，模型學到「只缺一項」。
 
 ## test_ood-00109（test_ood / clarify / S26）— wrong_missing
 
@@ -216,7 +216,7 @@ gold：
 {"action":"clarify","missing":["claim_text","reference_patent_no"]}
 ```
 
-觀察：
+觀察：action 正確，但直接照 compare_claims 參數列出 claim_text；沒推到「請求項文字要先用 get_case(case_id) 取得」這一跳。
 
 ## test_ood-00098（test_ood / dag / S22）— ref_arg, dependency
 
@@ -267,7 +267,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2025-4647","claim_no":19,"instruction":"限定封裝層厚度小於 50 微米"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2025-7654"},"depends_on":[]},{"id":"s3","tool":"draft_response","args":{"oa_id":"OA-2025-7654","arguments":"核駁理由"},"depends_on":["s2"]}]}
 ```
 
-觀察：
+觀察：兩個來源都有，但先排 amend_claims，draft_response 只引用一個來源且漏 amendments；匯合（fan-in）結構沒學會。
 
 ## test_ood-00085（test_ood / dag / S22）— missing_step, literal_arg, ref_arg, dependency
 
@@ -318,7 +318,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2026-0747","claim_no":3,"instruction":"刪除重複的附屬項敘述"},"depends_on":[]},{"id":"s2","tool":"draft_response","args":{"oa_id":"OA-2026-2208","arguments":"TW-2026-0747請求項3已修正，刪除重複的附屬項敘述"},"depends_on":["s1"]}]}
 ```
 
-觀察：
+觀察：漏掉 get_office_action，arguments 直接塞字面文字、沒有 amendments；兩個獨立來源匯合到 draft_response 的結構沒學會。
 
 ## test_ood-00108（test_ood / clarify / S26）— wrong_missing
 
@@ -340,7 +340,7 @@ gold：
 {"action":"clarify","missing":["claim_text","reference_patent_no"]}
 ```
 
-觀察：
+觀察：action 正確，但直接照 compare_claims 參數列出 claim_text；沒推到「請求項文字要先用 get_case(case_id) 取得」這一跳。
 
 ## test_ood-00092（test_ood / dag / S22）— ref_arg, dependency
 
@@ -391,7 +391,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2026-2994","claim_no":8,"instruction":"加入散熱鰭片的結構限定"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2026-7341"},"depends_on":[]},{"id":"s3","tool":"draft_response","args":{"oa_id":"OA-2026-7341","arguments":"$s2.grounds"},"depends_on":["s2"]}]}
 ```
 
-觀察：
+觀察：兩個來源都有，但先排 amend_claims，draft_response 只引用一個來源且漏 amendments；匯合（fan-in）結構沒學會。
 
 ## test_ood-00065（test_ood / chain / S17）— distractor, dependency
 
@@ -441,7 +441,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_patent","args":{"patent_no":"I740982"},"depends_on":[]},{"id":"s2","tool":"translate_text","args":{"text":"$s1.abstract","target_lang":"en"},"depends_on":["s1"]},{"id":"s3","tool":"get_case","args":{"case_id":"TW-2026-8918"},"depends_on":[]},{"id":"s4","tool":"notify_client","args":{"case_id":"TW-2026-8918","message":"$s2.translated"},"depends_on":["s2","s3"]}]}
 ```
 
-觀察：
+觀察：主鏈正確，但多加 get_case 並把它接進 notify_client 的相依；看到「客戶」就查案件的偏誤，與 S16 同源。
 
 ## test_ood-00111（test_ood / clarify / S26）— wrong_missing
 
@@ -463,7 +463,7 @@ gold：
 {"action":"clarify","missing":["claim_text","reference_patent_no"]}
 ```
 
-觀察：
+觀察：action 正確，但直接照 compare_claims 參數列出 claim_text；沒推到「請求項文字要先用 get_case(case_id) 取得」這一跳。
 
 ## test_ood-00041（test_ood / chain / S16）— distractor, ref_arg
 
@@ -513,7 +513,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_case","args":{"case_id":"TW-2025-0561"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2025-3491"},"depends_on":[]},{"id":"s3","tool":"calc_deadline","args":{"issue_date":"$s2.issue_date","extension_months":3},"depends_on":["s2"]},{"id":"s4","tool":"notify_client","args":{"case_id":"TW-2025-0561","message":"OA-2025-3491 延期三個月，新的期限為 $s3.deadline"},"depends_on":["s3"]}]}
 ```
 
-觀察：
+觀察：多加一步不必要的 get_case（需求提到「客戶」就去查案件），後續編號全部位移；另外把引用包進句子。
 
 ## test_ood-00083（test_ood / dag / S22）— missing_step, literal_arg, ref_arg, dependency
 
@@ -564,7 +564,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2025-1437","claim_no":7,"instruction":"加入散熱鰭片的結構限定"},"depends_on":[]},{"id":"s2","tool":"draft_response","args":{"oa_id":"OA-2025-5011","arguments":"$s1.amended_claim"},"depends_on":["s1"]}]}
 ```
 
-觀察：
+觀察：漏掉 get_office_action，arguments 直接塞字面文字、沒有 amendments；兩個獨立來源匯合到 draft_response 的結構沒學會。
 
 ## test_ood-00118（test_ood / clarify / S26）— wrong_missing
 
@@ -586,7 +586,7 @@ gold：
 {"action":"clarify","missing":["claim_text","reference_patent_no"]}
 ```
 
-觀察：
+觀察：action 正確，但直接照 compare_claims 參數列出 claim_text；沒推到「請求項文字要先用 get_case(case_id) 取得」這一跳。
 
 ## test_ood-00036（test_ood / chain / S16）— ref_arg
 
@@ -636,7 +636,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_office_action","args":{"oa_id":"OA-2026-3892"},"depends_on":[]},{"id":"s2","tool":"calc_deadline","args":{"issue_date":"$s1.issue_date","extension_months":3},"depends_on":["s1"]},{"id":"s3","tool":"notify_client","args":{"case_id":"TW-2026-2879","message":"新的答辯期限為：$s2.deadline"},"depends_on":["s2"]}]}
 ```
 
-觀察：
+觀察：步驟、相依、引用全對，只是把 $s2.deadline 包進一句通知文字；屬引用格式約定問題，不是規劃錯誤。
 
 ## test_ood-00079（test_ood / dag / S22）— missing_step, literal_arg, ref_arg, dependency
 
@@ -687,7 +687,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2026-9547","claim_no":6,"instruction":"限定封裝層厚度小於 50 微米"},"depends_on":[]},{"id":"s2","tool":"draft_response","args":{"oa_id":"OA-2026-5453","arguments":"TW-2026-9547 請求項 6 已修正為封裝層厚度小於 50 微米"},"depends_on":[]}]}
 ```
 
-觀察：
+觀察：漏掉 get_office_action，arguments 直接塞字面文字、沒有 amendments；兩個獨立來源匯合到 draft_response 的結構沒學會。
 
 ## test_ood-00042（test_ood / chain / S16）— distractor, ref_arg
 
@@ -737,7 +737,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_case","args":{"case_id":"TW-2026-5702"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2026-4876"},"depends_on":[]},{"id":"s3","tool":"calc_deadline","args":{"issue_date":"$s2.issue_date","extension_months":3},"depends_on":["s2"]},{"id":"s4","tool":"notify_client","args":{"case_id":"TW-2026-5702","message":"OA-2026-4876的答辯期限已延長3個月，新期限為：$s3.deadline"},"depends_on":["s3"]}]}
 ```
 
-觀察：
+觀察：多加一步不必要的 get_case（需求提到「客戶」就去查案件），後續編號全部位移；另外把引用包進句子。
 
 ## test_ood-00086（test_ood / dag / S22）— ref_arg, dependency
 
@@ -788,7 +788,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2025-4590","claim_no":5,"instruction":"加入散熱鰭片的結構限定"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2025-3076"},"depends_on":[]},{"id":"s3","tool":"draft_response","args":{"oa_id":"OA-2025-3076","arguments":"$s2.rejected_claims"},"depends_on":["s2"]}]}
 ```
 
-觀察：
+觀察：兩個來源都有，但先排 amend_claims，draft_response 只引用一個來源且漏 amendments；匯合（fan-in）結構沒學會。
 
 ## test_ood-00115（test_ood / clarify / S26）— wrong_missing
 
@@ -810,7 +810,7 @@ gold：
 {"action":"clarify","missing":["claim_text","reference_patent_no"]}
 ```
 
-觀察：
+觀察：action 正確，但直接照 compare_claims 參數列出 claim_text；沒推到「請求項文字要先用 get_case(case_id) 取得」這一跳。
 
 ## test_ood-00033（test_ood / chain / S16）— ref_arg
 
@@ -860,7 +860,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_office_action","args":{"oa_id":"OA-2026-1664"},"depends_on":[]},{"id":"s2","tool":"calc_deadline","args":{"issue_date":"$s1.issue_date","extension_months":2},"depends_on":["s1"]},{"id":"s3","tool":"notify_client","args":{"case_id":"TW-2026-4217","message":"OA-2026-1664的答辯期限已延長2個月，新期限為：$s2.deadline"},"depends_on":["s2"]}]}
 ```
 
-觀察：
+觀察：步驟、相依、引用全對，只是把 $s2.deadline 包進一句通知文字；屬引用格式約定問題，不是規劃錯誤。
 
 ## test_ood-00104（test_ood / clarify / S26）— wrong_missing
 
@@ -882,7 +882,7 @@ gold：
 {"action":"clarify","missing":["case_id"]}
 ```
 
-觀察：
+觀察：action 正確，但 missing 只列 1 項、漏了 reference_patent_no；訓練集 clarify 全是單一缺漏，模型學到「只缺一項」。
 
 ## test_ood-00101（test_ood / clarify / S26）— wrong_missing
 
@@ -904,7 +904,7 @@ gold：
 {"action":"clarify","missing":["claim_text","reference_patent_no"]}
 ```
 
-觀察：
+觀察：action 正確，但直接照 compare_claims 參數列出 claim_text；沒推到「請求項文字要先用 get_case(case_id) 取得」這一跳。
 
 ## test_ood-00090（test_ood / dag / S22）— ref_arg, dependency
 
@@ -955,7 +955,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2025-9617","claim_no":12,"instruction":"限定封裝層厚度小於 50 微米"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2025-4144"},"depends_on":[]},{"id":"s3","tool":"draft_response","args":{"oa_id":"OA-2025-4144","arguments":"$s2.grounds"},"depends_on":["s2"]}]}
 ```
 
-觀察：
+觀察：兩個來源都有，但先排 amend_claims，draft_response 只引用一個來源且漏 amendments；匯合（fan-in）結構沒學會。
 
 ## test_ood-00045（test_ood / chain / S16）— distractor, ref_arg, dependency
 
@@ -1005,7 +1005,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_case","args":{"case_id":"TW-2026-0701"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2026-0380"},"depends_on":[]},{"id":"s3","tool":"calc_deadline","args":{"issue_date":"$s2.issue_date","extension_months":1},"depends_on":["s2"]},{"id":"s4","tool":"notify_client","args":{"case_id":"TW-2026-0701","message":"OA-2026-0380 的答辯期限為 $s3.deadline"},"depends_on":["s1","s3"]}]}
 ```
 
-觀察：
+觀察：多加一步不必要的 get_case（需求提到「客戶」就去查案件），後續編號全部位移；另外把引用包進句子。
 
 ## test_ood-00077（test_ood / dag / S22）— missing_step, literal_arg, ref_arg, dependency
 
@@ -1056,7 +1056,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"amend_claims","args":{"case_id":"TW-2025-7661","claim_no":10,"instruction":"刪除重複的附屬項敘述"},"depends_on":[]},{"id":"s2","tool":"draft_response","args":{"oa_id":"OA-2025-0935","arguments":"根據 OA-2025-0935 的核駁理由撰寫答辯書"},"depends_on":[]}]}
 ```
 
-觀察：
+觀察：漏掉 get_office_action，arguments 直接塞字面文字、沒有 amendments；兩個獨立來源匯合到 draft_response 的結構沒學會。
 
 ## test_ood-00082（test_ood / dag / S22）— distractor, ref_arg, dependency
 
@@ -1107,7 +1107,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_case","args":{"case_id":"TW-2025-8624"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2025-9343"},"depends_on":[]},{"id":"s3","tool":"amend_claims","args":{"case_id":"TW-2025-8624","claim_no":15,"instruction":"限定封裝層厚度小於 50 微米"},"depends_on":["s1"]},{"id":"s4","tool":"draft_response","args":{"oa_id":"OA-2025-9343","arguments":"$s1.claims[15]"},"depends_on":["s1"]}]}
 ```
 
-觀察：
+觀察：多加 get_case 並錯接相依；draft_response 只接一個來源，漏 amendments。
 
 ## test_ood-00030（test_ood / chain / S16）— ref_arg
 
@@ -1157,7 +1157,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_office_action","args":{"oa_id":"OA-2026-5865"},"depends_on":[]},{"id":"s2","tool":"calc_deadline","args":{"issue_date":"$s1.issue_date","extension_months":1},"depends_on":["s1"]},{"id":"s3","tool":"notify_client","args":{"case_id":"TW-2026-6572","message":"OA-2026-5865 的答辯期限已延長 1 個月，新期限為：$s2.deadline"},"depends_on":["s2"]}]}
 ```
 
-觀察：
+觀察：步驟、相依、引用全對，只是把 $s2.deadline 包進一句通知文字；屬引用格式約定問題，不是規劃錯誤。
 
 ## test_ood-00046（test_ood / chain / S16）— distractor, ref_arg
 
@@ -1207,7 +1207,7 @@ gold：
 {"action":"plan","steps":[{"id":"s1","tool":"get_case","args":{"case_id":"TW-2026-8735"},"depends_on":[]},{"id":"s2","tool":"get_office_action","args":{"oa_id":"OA-2026-9940"},"depends_on":[]},{"id":"s3","tool":"calc_deadline","args":{"issue_date":"$s2.issue_date","extension_months":3},"depends_on":["s2"]},{"id":"s4","tool":"notify_client","args":{"case_id":"TW-2026-8735","message":"OA-2026-9940 的答辯期限已延長 3 個月，新期限為：$s3.deadline"},"depends_on":["s3"]}]}
 ```
 
-觀察：
+觀察：多加一步不必要的 get_case（需求提到「客戶」就去查案件），後續編號全部位移；另外把引用包進句子。
 
 ## test_ood-00120（test_ood / clarify / S26）— wrong_missing
 
@@ -1229,4 +1229,4 @@ gold：
 {"action":"clarify","missing":["patent_no"]}
 ```
 
-觀察：
+觀察：action 正確，但 missing=['patent_no'] 錯；把需求理解成查專利而不是比對本案請求項。
