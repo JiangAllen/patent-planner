@@ -157,3 +157,41 @@ TEMPLATES: list[dict] = [
      "drop": "calc_deadline",
      "requests": ["幫我算 {OA} 的答辯期限", "{OA} 最晚什麼時候要回？", "讀 {OA}，然後算出答辯期限"]},
 ]
+
+# 第二輪（docs/plan-v2.md）：只補 v1 train 缺的元件，不複製任何 holdout 結構；全部進 train。
+TEMPLATES_V2: list[dict] = [
+    # .grounds 當論點（S22 的一半，但沒有修正步驟）
+    {"id": "S31", "category": "chain",
+     "steps": [("s1", "get_office_action", {"oa_id": "{OA}"}),
+               ("s2", "draft_response", {"oa_id": "{OA}", "arguments": "$s1.grounds"})],
+     "requests": ["針對 {OA} 的核駁理由擬一份答辯書", "讀 {OA}，依核駁理由寫答辯書草稿",
+                  "{OA} 的核駁理由看一下，然後起草答辯書"]},
+    # amendments + 匯合；論點來自比對結果
+    {"id": "S32", "category": "dag",
+     "steps": [("s1", "get_case", {"case_id": "{CASE}"}),
+               ("s2", "get_office_action", {"oa_id": "{OA}"}),
+               ("s3", "compare_claims", {"claim_text": "$s1.claims[0]", "reference_patent_no": "$s2.cited_refs[0]"}),
+               ("s4", "amend_claims", {"case_id": "{CASE}", "claim_no": "{CLAIM}", "instruction": "{INSTR}"}),
+               ("s5", "draft_response",
+                {"oa_id": "{OA}", "arguments": "$s3.distinguishing_features", "amendments": "$s4.amended_claim"})],
+     "requests": ["{CASE} 的請求項 1 跟 {OA} 第一件引證比對出差異，請求項 {CLAIM} 改成「{INSTR}」，兩者一起寫進答辯書",
+                  "用 {CASE} 對 {OA} 引證的比對差異當論點，加上請求項 {CLAIM} 的修正（{INSTR}），擬答辯書",
+                  "{OA} 要答辯：先比對 {CASE} 請求項 1 與第一件引證，再把請求項 {CLAIM} 修正為「{INSTR}」，最後合成答辯書"]},
+    {"id": "S33", "category": "dag",
+     "steps": [("s1", "get_case", {"case_id": "{CASE}"}),
+               ("s2", "compare_claims", {"claim_text": "$s1.claims[0]", "reference_patent_no": "{PAT}"}),
+               ("s3", "amend_claims", {"case_id": "{CASE}", "claim_no": "{CLAIM}", "instruction": "{INSTR}"}),
+               ("s4", "draft_response",
+                {"oa_id": "{OA}", "arguments": "$s2.distinguishing_features", "amendments": "$s3.amended_claim"})],
+     "requests": ["{CASE} 請求項 1 跟 {PAT} 比對，請求項 {CLAIM} 修正為「{INSTR}」，再用這兩個結果回 {OA}",
+                  "回覆 {OA}：論點用 {CASE} 與 {PAT} 的比對差異，修正是請求項 {CLAIM}「{INSTR}」",
+                  "幫 {OA} 擬答辯書，附 {CASE} 請求項 {CLAIM} 的修正（{INSTR}），並以 {CASE} 請求項 1 對 {PAT} 的差異為論點"]},
+    # clarify：一次缺 2 項
+    {"id": "S34", "category": "clarify", "needs": ["get_patent", "translate_text"],
+     "missing": ["patent_no", "target_lang"],
+     "requests": ["幫我把那件專利的摘要翻譯一下", "那篇引證的摘要翻成外文給我", "專利摘要幫我翻一下"]},
+    # clarify：兩跳——calc_deadline 要的 issue_date 來自通知書，所以該問 oa_id
+    {"id": "S35", "category": "clarify", "needs": ["get_office_action", "calc_deadline", "notify_client"],
+     "missing": ["oa_id", "case_id"],
+     "requests": ["把答辯期限算出來後通知客戶", "算好通知書的答辯期限再告訴客戶", "通知客戶這份通知書的答辯期限"]},
+]
