@@ -1,0 +1,9 @@
+[project]
+name = "patent-planner-train"
+version = "0.1.0"
+description = "GPU 子專案（只在 WSL2 跑；venv 放 ext4）"
+requires-python = ">=3.12"
+dependencies = ["unsloth", "trl", "datasets", "transformers", "mlflow", "patent-planner"]
+
+[tool.uv.sources]
+patent-planner = { path = "..", editable = true }

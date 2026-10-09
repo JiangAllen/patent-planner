@@ -1,0 +1,11 @@
+{
+  "run_name": "fewshot",
+  "model": "unsloth/Qwen3-4B-Instruct-2507",
+  "shots": 3,
+  "splits": [
+    "test_id",
+    "test_ood"
+  ],
+  "batch_size": 8,
+  "limit": 0
+}
