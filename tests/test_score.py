@@ -101,3 +101,13 @@ def test_unparseable_prediction():
 def test_bootstrap_ci_brackets_mean():
     mean, lo, hi = bootstrap_ci([1.0] * 30 + [0.0] * 10)
     assert mean == 0.75 and lo <= mean <= hi and hi - lo > 0
+
+
+def test_paired_diff_detects_consistent_gain_and_zero_for_identical():
+    from evaluation.sensitivity import paired_diff
+    a = [0.0] * 50 + [1.0] * 50
+    m, lo, hi = paired_diff(a, a)
+    assert (m, lo, hi) == (0.0, 0.0, 0.0)
+    b = [1.0] * 20 + [0.0] * 30 + [1.0] * 50  # 20 題由錯變對
+    m, lo, hi = paired_diff(a, b)
+    assert m == 0.2 and 0 < lo < m < hi

@@ -32,6 +32,7 @@ def main() -> None:
     ap.add_argument("--rank", type=int, default=16)
     ap.add_argument("--alpha", type=int, default=32)
     ap.add_argument("--epochs", type=int, default=3)
+    ap.add_argument("--train-file", default="train", help="data/ 下的 train 檔名（不含 .jsonl），第二輪用 train_v2")
     ap.add_argument("--max-steps", type=int, default=-1, help="smoke 用；-1 = 跑滿 epochs")
     a = ap.parse_args()
 
@@ -59,7 +60,7 @@ def main() -> None:
                                                                    add_generation_prompt=True)
                                    + gold_text(r["gold"]) + "<|im_end|>\n"} for r in rows])
 
-    ds = {"train": load_text("train"), "val": load_text("val")}
+    ds = {"train": load_text(a.train_file), "val": load_text("val")}
     sample_text = ds["train"][0]["text"]
     assert "<think>" not in sample_text, "訓練文字出現 <think>，與推論 prompt 不一致"
     print(sample_text)
@@ -74,12 +75,12 @@ def main() -> None:
     mlflow.set_tracking_uri(f"file://{REPO / 'mlruns'}")
     mlflow.set_experiment("patent-planner")
     with mlflow.start_run(run_name=a.run_name):
-        manifest = json.loads((data_dir / "manifest.json").read_text(encoding="utf-8"))
+        manifest = json.loads((data_dir / ("manifest_v2.json" if a.train_file == "train_v2" else "manifest.json")).read_text(encoding="utf-8"))
         mlflow.log_params({
             "base_model": a.base, "dataset_version": manifest["version"], "lora_rank": a.rank,
             "lora_alpha": a.alpha, "max_seq_length": a.max_seq_length, "epochs": a.epochs,
             "max_steps": a.max_steps, "train_samples": len(ds["train"]), "val_samples": len(ds["val"]),
-            "dropped_overlong": json.dumps(dropped), "train_sha256": _sha(data_dir / "train.jsonl"),
+            "dropped_overlong": json.dumps(dropped), "train_file": a.train_file, "train_sha256": _sha(data_dir / f"{a.train_file}.jsonl"),
             "chat_template_sha": hashlib.sha256((tok.chat_template or "").encode()).hexdigest()[:16],
         })
         trainer = SFTTrainer(

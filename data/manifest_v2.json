@@ -1,0 +1,15 @@
+{
+  "version": "v2",
+  "base": "v1 train + TEMPLATES_V2",
+  "paraphrase_model": "qwen2.5:7b-instruct",
+  "paraphrase_ok_rate": 0.956,
+  "added": {
+    "S31": 100,
+    "S32": 100,
+    "S33": 100,
+    "S34": 96,
+    "S35": 99
+  },
+  "dropped": 5,
+  "train_total": 2534
+}
