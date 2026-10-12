@@ -89,7 +89,7 @@ def generate(seed: int = 42, per_seen: int = 100, per_ood: int = 25) -> list[dic
 
 
 def finalize(rows: list[dict]) -> list[dict]:
-    """改寫完成後呼叫：split 內去重、剔除 request 與 train 相同的 val / test_id，最後給 id。"""
+    """改寫完成後呼叫：split 內去重、剔除 request 與 train 相同的 val / test，最後給 id。"""
     train_reqs = {r["request"] for r in rows if r["split"] == "train"}
     out = []
     for split in SPLITS:
@@ -98,7 +98,7 @@ def finalize(rows: list[dict]) -> list[dict]:
             if r["split"] != split:
                 continue
             key = (r["request"], tuple(sorted(r["available_tools"])))
-            if key in keys or (split in ("val", "test_id") and r["request"] in train_reqs):
+            if key in keys or (split != "train" and r["request"] in train_reqs):
                 continue
             keys.add(key)
             out.append({"id": f"{split}-{len(keys) - 1:05d}", **r})

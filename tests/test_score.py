@@ -111,3 +111,23 @@ def test_paired_diff_detects_consistent_gain_and_zero_for_identical():
     b = [1.0] * 20 + [0.0] * 30 + [1.0] * 50  # 20 題由錯變對
     m, lo, hi = paired_diff(a, b)
     assert m == 0.2 and 0 < lo < m < hi
+
+
+def test_swapped_dependencies_between_duplicate_tools_is_not_exact():
+    # 兩個 get_patent 各接一個 notify_client；對調相依後，以工具名比對的邊集合不變，但 DAG 不同
+    def plan(a, b):
+        return {"action": "plan", "steps": [
+            {"id": "s1", "tool": "get_patent", "args": {"patent_no": "I700001"}, "depends_on": []},
+            {"id": "s2", "tool": "get_patent", "args": {"patent_no": "I700002"}, "depends_on": []},
+            {"id": "s3", "tool": "notify_client", "args": {"case_id": "C1", "message": "a"}, "depends_on": [a]},
+            {"id": "s4", "tool": "notify_client", "args": {"case_id": "C1", "message": "b"}, "depends_on": [b]},
+        ]}
+    m = score_sample(plan("s1", "s2"), plan("s2", "s1"))
+    assert not m["exact"]  # deps_ok 刻意只看工具名（診斷指標），主指標 exact 必須判錯
+
+
+def test_paired_diff_rejects_unequal_lengths():
+    import pytest
+    from evaluation.sensitivity import paired_diff
+    with pytest.raises(ValueError):
+        paired_diff([0.0], [0.0, 1.0])

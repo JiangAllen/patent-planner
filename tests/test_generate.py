@@ -74,6 +74,5 @@ def test_finalize_drops_duplicates_and_train_leakage():
             {**base, "split": "test_id", "request": "B"},
             {**base, "split": "test_ood", "request": "A"}]
     out = finalize(rows)
-    assert [(r["split"], r["request"]) for r in out] == [
-        ("train", "A"), ("test_id", "B"), ("test_ood", "A")]
-    assert [r["id"] for r in out] == ["train-00000", "test_id-00000", "test_ood-00000"]
+    assert [(r["split"], r["request"]) for r in out] == [("train", "A"), ("test_id", "B")]
+    assert [r["id"] for r in out] == ["train-00000", "test_id-00000"]

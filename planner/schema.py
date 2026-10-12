@@ -10,14 +10,17 @@ ACTIONS = {"plan", "clarify", "refuse"}
 
 def parse_output(text: str) -> dict | None:
     """擷取輸出中的第一個 JSON 物件；容忍 ```json 圍欄與前後說明文字。失敗回傳 None。"""
+    decoder = json.JSONDecoder()
     start = text.find("{")
-    if start < 0:
-        return None
-    try:
-        obj, _ = json.JSONDecoder().raw_decode(text[start:])
-    except json.JSONDecodeError:
-        return None
-    return obj if isinstance(obj, dict) else None
+    while start >= 0:  # 前面的說明文字可能也有花括號，逐一嘗試
+        try:
+            obj, _ = decoder.raw_decode(text[start:])
+            if isinstance(obj, dict):
+                return obj
+        except json.JSONDecodeError:
+            pass
+        start = text.find("{", start + 1)
+    return None
 
 
 def step_refs(step: dict) -> list[str]:
@@ -93,7 +96,8 @@ def validate(obj: dict, available_tools: list[str] | None = None, strict: bool =
         return ["plan.steps 必須是非空陣列"]
     for s in steps:
         if not (isinstance(s, dict) and isinstance(s.get("id"), str) and isinstance(s.get("tool"), str)
-                and isinstance(s.get("args"), dict) and isinstance(s.get("depends_on"), list)):
+                and isinstance(s.get("args"), dict) and isinstance(s.get("depends_on"), list)
+                and all(isinstance(d, str) for d in s["depends_on"])):
             return [f"step 結構錯誤：{s!r}"]
     ids = [s["id"] for s in steps]
     errs = [] if len(set(ids)) == len(ids) else ["step id 重複"]

@@ -69,3 +69,14 @@ def test_clarify_and_refuse_shapes():
 def test_render_tools_marks_optional_params():
     text = render_tools(["search_prior_art"])
     assert "query: str" in text and "top_k?: int" in text and "results[].patent_no" in text
+
+
+def test_parse_output_skips_braces_in_leading_prose():
+    text = '說明 {不是 JSON}。結果：```json\n{"action": "refuse", "reason": "no_capable_tool"}\n```'
+    assert parse_output(text) == {"action": "refuse", "reason": "no_capable_tool"}
+
+
+def test_non_string_depends_on_is_format_error_not_crash():
+    bad = {"action": "plan", "steps": [
+        {"id": "s1", "tool": "get_case", "args": {"case_id": "x"}, "depends_on": [["s1"]]}]}
+    assert validate(bad)

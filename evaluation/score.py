@@ -48,6 +48,10 @@ def _edges(steps: list[dict]) -> Counter:
     return Counter((tool.get(d), s["tool"]) for s in steps for d in s["depends_on"])
 
 
+def _canon_edges(steps: list[dict], canon: Canon) -> Counter:
+    return Counter((canon.step(d), canon.step(s["id"])) for s in steps for d in s["depends_on"])
+
+
 def score_sample(gold: dict, pred: dict | None) -> dict:
     gold_steps = gold.get("steps", [])
     gold_tools = Counter(s["tool"] for s in gold_steps)
@@ -83,7 +87,9 @@ def score_sample(gold: dict, pred: dict | None) -> dict:
                 if ps is not None and k in ps["args"] and p.value(ps["args"][k]) == g.value(v):
                     m["ref_ok" if _is_ref(v) else "lit_ok"] += 1
         m["deps_ok"] = m["action_ok"] and _edges(gold_steps) == _edges(pred_steps)
-        m["exact"] = m["deps_ok"] and Counter(g.all().values()) == Counter(p.all().values())
+        # deps_ok 只看工具名（診斷用）；exact 另外比對以 Canon 表示的邊，重複工具對調相依時才分得出來
+        m["exact"] = (m["deps_ok"] and Counter(g.all().values()) == Counter(p.all().values())
+                      and _canon_edges(gold_steps, g) == _canon_edges(pred_steps, p))
     return m
 
 

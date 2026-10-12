@@ -28,6 +28,8 @@ def unwrap(obj):
 
 def paired_diff(a: list[float], b: list[float], n_boot: int = 10000, seed: int = 0) -> tuple[float, float, float]:
     """同一組題目上 b − a 的平均差與 95% 配對 bootstrap CI；比兩個獨立 CI 是否重疊更有檢定力。"""
+    if not a or len(a) != len(b):
+        raise ValueError(f"配對資料長度不符或為空：{len(a)} vs {len(b)}")
     d = [y - x for x, y in zip(a, b)]
     rng = random.Random(seed)
     boots = sorted(sum(rng.choice(d) for _ in d) / len(d) for _ in range(n_boot))
@@ -43,6 +45,8 @@ def main() -> None:
         for sp in SPLITS:
             ex = [{r["id"]: float(r["exact"]) for r in load_jsonl(REPO / "reports" / "scored" / f"{run}_{sp}.jsonl")}
                   for run in a.paired]
+            if set(ex[0]) != set(ex[1]):
+                raise ValueError(f"{sp}：兩組預測的題目 id 不一致")
             ids = sorted(ex[0])
             m, lo, hi = paired_diff([ex[0][i] for i in ids], [ex[1][i] for i in ids])
             print(f"{a.paired[1]} − {a.paired[0]} | {sp} | n={len(ids)} | {m:+.3f} [{lo:+.3f}, {hi:+.3f}]")
