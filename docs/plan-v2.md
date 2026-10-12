@@ -11,7 +11,7 @@
 | `draft_response` 帶 `amendments` 參數 | 0 / 2039 | S22 |
 | 引用 `get_office_action` 的 `.grounds` 欄位 | 0 / 2039 | S22 |
 | clarify 的缺漏清單有 2 項 | 0 / 237 | S26 |
-| clarify 需要兩跳推理（缺的欄位要由另一個工具取得） | 0 / 237 | S26 |
+| clarify 需要兩跳推理（缺的欄位要由另一個工具取得） | 只有 S23 一個方向（73 筆：`calc_deadline` → 追問 `oa_id`） | S26 |
 
 ## 新增 5 個模板（S31–S35，不設 holdout）
 
@@ -21,7 +21,7 @@
 | S32 | dag | `get_case` + `get_office_action` → `compare_claims` → `amend_claims` → `draft_response(arguments=$s3.distinguishing_features, amendments=$s4.amended_claim)` | `amendments`、匯合 | 論點來自比對結果，不是 `.grounds` |
 | S33 | dag | `get_case` → `compare_claims(reference_patent_no={PAT})` + `amend_claims` → `draft_response(…, amendments=…)` | `amendments`、匯合 | 同上 |
 | S34 | clarify | 需要 `get_patent`、`translate_text`；缺 `[patent_no, target_lang]` | 缺 2 項 | 不同工具 |
-| S35 | clarify | 需要 `get_case`、`get_office_action`、`compare_claims`；缺 `[case_id, oa_id]` | 缺 2 項 + 兩跳 | S26 缺的是 `reference_patent_no`；這裡缺的是取得引證的來源 |
+| S35 | clarify | 需要 `get_office_action`、`calc_deadline`、`notify_client`；缺 `[oa_id, case_id]` | 缺 2 項 + 兩跳（同 S23 方向） | 與 S26 的工具與兩跳方向都不同（初版設計太像 S26，實作時已改） |
 
 **注意（簡報要誠實說明）**：補完之後，S22 從「需要沒見過的元件」變成「沒見過的元件組合」。所以 v2 驗證的是「補元件能否讓模型學會組合」，S22 與 S26 的 OOD 性質會變弱，這點要寫進報告。
 

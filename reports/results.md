@@ -1,6 +1,6 @@
 # 評估結果
 
-所有數字皆為本批測試集的觀察值；exact match 附 95% bootstrap CI，CI 重疊時不宣稱差異。
+所有數字皆為本批測試集的觀察值；exact match 附 95% bootstrap CI，CI 重疊時不宣稱差異；同一批題目上的兩組比較另以配對 bootstrap 檢定（`python -m evaluation.sensitivity --paired A B`）。
 
 ## 整體指標
 

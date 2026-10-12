@@ -1,7 +1,6 @@
 # 鴻海二面：專利答辯 Agent Planner 微調 — 設計 spec
 
 - 日期：2026-10-09；二面：**2026-10-16（五）**
-- 題目原文：`interviews/foxconn/蔣君逸_二面題目.md`
 - 實作位置：新 repo `JiangAllen/patent-planner`（本機 `C:\Users\USER\Desktop\patent-planner`），**先 private，面試前轉 public**；本 spec 核准後複製一份過去
 - 評分重點（題目）：Planner Model Fine-tuning、Dataset / Experiment Design、Model Evaluation / Error Analysis
 
@@ -12,7 +11,7 @@
   1. 微調模型在**沒看過的任務組合（test_ood）**上，plan exact match 明顯優於 zero-shot 與 few-shot baseline（95% bootstrap CI 不重疊才宣稱改善）。
   2. 能依任務類型說明哪裡進步、哪裡仍錯，並以 test_id 與 test_ood 的差距說明泛化程度。
 - 限制：
-  - 資料全部合成，**不碰任何前公司客戶案件內容**；也不沿用 `patent-oa-qlora` adapter（任務不同、以客戶資料訓練、7B 不符題目規格）。
+  - 資料全部合成，**不碰任何前公司客戶案件內容**；也不沿用 `patent-oa-qlora` adapter（任務不同、7B 不符題目規格）。
   - 全程本地：本機 4070 SUPER 12GB 訓練，資料改寫用本地 Ollama，零 API 成本。設定需能在 Colab T4 16GB 重現。
 
 ## 2. Agent 定義
@@ -117,7 +116,7 @@ Planner（被微調的 LLM）一次產出整張工具呼叫 DAG，Executor（一
 | 有效 batch size | 16 |
 | max_seq_length | 依長度統計決定（預計約 1500） |
 | Loss | 只算 assistant 段（`train_on_responses_only`，`<\|im_start\|>` 分界） |
-| Checkpoint 選擇 | val loss + val plan exact match |
+| Checkpoint 選擇 | val loss（early stopping patience 1；實作未在訓練中算 exact match，val exact 於訓練後另算） |
 
 流程：20 步 smoke → 完整訓練（預計 30–60 分鐘）。
 

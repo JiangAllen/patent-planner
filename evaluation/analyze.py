@@ -66,7 +66,7 @@ def _ci(t) -> str:
 
 
 def _report(data: dict, runs: list[str]) -> str:
-    lines = ["# 評估結果", "", "所有數字皆為本批測試集的觀察值；exact match 附 95% bootstrap CI，CI 重疊時不宣稱差異。", "",
+    lines = ["# 評估結果", "", "所有數字皆為本批測試集的觀察值；exact match 附 95% bootstrap CI，CI 重疊時不宣稱差異；同一批題目上的兩組比較另以配對 bootstrap 檢定（`python -m evaluation.sensitivity --paired A B`）。", "",
              "## 整體指標", "",
              "| run | split | n | exact match [95% CI] | JSON 合法 | schema 合法 | action 準確 | tool F1 | 干擾項誤用 | 字面參數 | 引用參數 | 相依 |",
              "|" + "---|" * 12]

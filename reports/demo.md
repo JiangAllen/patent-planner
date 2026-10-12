@@ -1,5 +1,7 @@
 # 端到端 Demo（qlora-r16-v2 + mock Executor）
 
+注意：三句 demo 請求接近訓練模板（S18、S23、S27），只用來展示端到端流程，不作為泛化能力的證據；泛化看 `reports/error_analysis.md` 的 OOD 分析。
+
 產生方式：`train/demo.py`（WSL，RTX 4070 SUPER，4-bit，greedy）。工具全是 mock，回傳固定假資料（`planner/executor.py`）。
 
 ## 1. 多步驟 DAG：比對請求項與引證
@@ -53,4 +55,4 @@ Planner（8.3 秒，含首次 CUDA 暖機）：s1 `get_case` 與 s2 `get_office_
 | qlora-r16-v2 | test_id | 100 | 100 | 0 |
 | qlora-r16-v2 | test_ood | 103 | 100 | 3 |
 
-zero-shot 的計畫 99% 跑得完，exact match 卻只有 0.413：**跑得完不代表做對**——錯接欄位、漏步驟、多做步驟都不會讓執行失敗。所以評估不能只看「有沒有報錯」，要對照 gold 計畫。執行失敗的少數案例是引用了不存在的欄位或索引。所有 gold 計畫皆可執行（mock 涵蓋完整）。
+同一個分母比較：zero-shot 在 test_id 有 95 份計畫跑得完，其中只有 35 份 exact（37%）；test_ood 是 101 份中 11 份。**跑得完不代表做對**——錯接欄位、漏步驟、多做步驟都不會讓執行失敗。所以評估不能只看「有沒有報錯」，要對照 gold 計畫。執行失敗的少數案例是引用了不存在的欄位或索引。所有 gold 計畫皆可執行（mock 涵蓋完整）。
