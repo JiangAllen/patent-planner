@@ -48,7 +48,8 @@
 4. **QLoRA**：熟題型幾乎全對，OOD 翻倍。→ `reports/figs/exact_by_category_test_ood.png`
 5. **Error analysis**：失敗集中在 3 種結構。原因是訓練資料缺某些元件（例如答辯書從不帶修正內容）。→ `reports/error_analysis.md` 第 1–5 節
 6. **第二輪驗證假設**：補元件後元件學會了（0/25 → 16/25），但組合與兩跳推理沒有轉移。→ `error_analysis.md` 第 6 節、`docs/plan-v2.md`
-7. **限制與下一步**：見第 5 節。
+7. **Demo**：一句話 → 計畫 → mock 工具依相依執行；另示範追問與拒絕。附帶發現：zero-shot 的計畫 99% 跑得完，但只有 41% 正確——「不報錯」不等於「做對」，所以要對照 gold 評估。→ `reports/demo.md`
+8. **限制與下一步**：見第 5 節。
 
 ## 5. 一定要主動講的限制
 
@@ -74,5 +75,6 @@
 | 第二輪計畫 | `docs/plan-v2.md` |
 | 評分邏輯 | `evaluation/score.py` |
 | 訓練程式 | `train/train_qlora.py` |
+| Demo 輸出、可執行率 | `reports/demo.md`（程式：`train/demo.py`、`planner/executor.py`） |
 
 其他檔案（`data/`、`results/preds/`、`reports/scored/`、`mlruns/`）都是中間產物，簡報不需要打開。

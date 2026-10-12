@@ -41,4 +41,5 @@ Plan-and-Execute：Planner 一次輸出工具呼叫 DAG（JSON），Executor 依
 - **簡報素材總覽：`docs/briefing.md`**
 - 設計：`docs/design.md`；第二輪計畫：`docs/plan-v2.md`
 - 評估結果：`reports/results.md`
+- Demo 與可執行率：`reports/demo.md`
 - Error analysis：`reports/error_analysis.md`；失敗案例：`reports/failures_*.md`
