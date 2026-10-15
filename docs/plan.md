@@ -1,7 +1,5 @@
 # 專利答辯 Agent Planner 微調 Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** 在 2026-10-16 二面前，完成一個以合成資料微調 Qwen3-4B 的專利答辯 Planner，含 baseline 對照、分層評估與 error analysis。
 
 **Architecture:** 新 repo `patent-planner`，分成兩個執行環境。Windows 端放純 Python 套件（`planner/` 格式與 prompt、`datagen/` 資料生成、`evaluation/` 評分與報告），用 `uv run pytest` 測試。WSL 端放 GPU 工作（`train/`：QLoRA 訓練、批次推論、demo），以 path dependency 引用同一份 `planner` 套件，確保訓練、baseline、評估用的是同一份 prompt。
@@ -28,7 +26,7 @@
 - 程式註解、docstring、輸出訊息用繁體中文；技術名詞保留英文。
 - 報告中的每個數字都附上 n；95% CI 重疊時不宣稱改善。
 - Repo 先設為 private，10/15 轉 public。
-- Commit 採 Conventional Commits、繁體中文，結尾附 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`。
+- Commit 採 Conventional Commits、繁體中文。
 
 ## Review Focus
 
@@ -398,7 +396,7 @@ Expected: 10 passed
 cd C:\Users\USER\Desktop\patent-planner
 git init -b main
 git add .
-git commit -m "feat: 專案骨架、工具定義與 Planner 輸出格式驗證" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "feat: 專案骨架、工具定義與 Planner 輸出格式驗證"
 gh repo create JiangAllen/patent-planner --private --source . --push
 ```
 
@@ -525,7 +523,7 @@ Expected: 5 passed
 
 ```powershell
 git add planner/prompt.py tests/test_prompt.py
-git commit -m "feat: 共用 prompt 組裝與 few-shot 範例選取" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "feat: 共用 prompt 組裝與 few-shot 範例選取"
 ```
 
 ---
@@ -953,7 +951,7 @@ Expected: `寫出 2550 筆到 ...data\raw.jsonl：{'train': 2050, 'val': 200, 't
 
 ```powershell
 git add datagen tests/test_generate.py
-git commit -m "feat: 30 個結構模板與反向資料生成器" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "feat: 30 個結構模板與反向資料生成器"
 ```
 
 `data/raw.jsonl` 是中間產物，在 Task 4 與最終資料集一起 commit。
@@ -1189,7 +1187,7 @@ Allen 在 `reports/spot_check.md` 逐筆標記，最後在檔尾寫上：「語�
 
 ```powershell
 git add datagen/paraphrase.py datagen/spot_check.py tests/test_paraphrase.py data reports/spot_check.md
-git commit -m "feat: Ollama 改寫與品質檢查，資料集 v1 定版" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "feat: Ollama 改寫與品質檢查，資料集 v1 定版"
 ```
 
 ---
@@ -1469,7 +1467,7 @@ Expected: 全部通過（39 passed）
 
 ```powershell
 git add evaluation/score.py tests/test_score.py
-git commit -m "feat: 評分器（正規化比對、分層指標、錯誤分類、bootstrap CI）" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "feat: 評分器（正規化比對、分層指標、錯誤分類、bootstrap CI）"
 ```
 
 ---
@@ -1625,7 +1623,7 @@ Run（Windows）：`uv run python -m evaluation.make_oracle`
 
 ```powershell
 git add train/pyproject.toml train/uv.lock train/infer.py evaluation/make_oracle.py results/preds
-git commit -m "feat: 批次推論與 zero-shot / few-shot baseline 預測" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "feat: 批次推論與 zero-shot / few-shot baseline 預測"
 ```
 
 ---
@@ -1850,7 +1848,7 @@ Expected：`reports/results.md` 有兩個 run × 兩個 split 的數字；`repor
 
 ```powershell
 git add evaluation/analyze.py reports
-git commit -m "feat: 評估彙整報告與圖表，baseline 結果" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "feat: 評估彙整報告與圖表，baseline 結果"
 ```
 
 ---
@@ -2028,7 +2026,7 @@ Expected：val exact 應明顯高於 baseline 的 test_id，且與 qlora 的 tes
 ```powershell
 uv run python -m evaluation.analyze --runs zeroshot fewshot qlora-r16 --dump-failures qlora-r16
 git add train/train_qlora.py results/preds/qlora-r16 reports
-git commit -m "feat: QLoRA 微調 Qwen3-4B 與三方評估結果" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "feat: QLoRA 微調 Qwen3-4B 與三方評估結果"
 ```
 
 MLflow 檢視（Windows，repo 根目錄）：`$env:MLFLOW_ALLOW_FILE_STORE = "true"; uvx mlflow ui --backend-store-uri mlruns`。簡報要用 loss 曲線時，從這裡截圖。
@@ -2088,7 +2086,7 @@ MLflow 檢視（Windows，repo 根目錄）：`$env:MLFLOW_ALLOW_FILE_STORE = "t
 
 ```powershell
 git add reports
-git commit -m "docs: error analysis 與失敗案例逐筆觀察" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "docs: error analysis 與失敗案例逐筆觀察"
 ```
 
 ---
@@ -2262,7 +2260,7 @@ Expected：先印出計畫，再依序印出 `▶ s1` / `▶ s2` / `▶ s3` 與�
 
 ```powershell
 git add planner/executor.py train/demo.py tests/test_executor.py
-git commit -m "feat: Executor demo（mock tools、依相依執行並解析引用）" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "feat: Executor demo（mock tools、依相依執行並解析引用）"
 ```
 
 ---
@@ -2312,7 +2310,7 @@ Plan-and-Execute：Planner 一次輸出工具呼叫 DAG（JSON），Executor 依
 
 ```powershell
 git add README.md
-git commit -m "docs: README 與結果摘要" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "docs: README 與結果摘要"
 git push
 ```
 

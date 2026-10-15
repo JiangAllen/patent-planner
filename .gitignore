@@ -3,6 +3,5 @@ __pycache__/
 outputs/
 mlruns/
 *.pyc
-.superpowers/
 unsloth_compiled_cache/
 .idea/
